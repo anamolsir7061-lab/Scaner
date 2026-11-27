@@ -1,12 +1,20 @@
 package com.example
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
-class ExampleAppTest {
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [36])
+class ExampleRobolectricTest {
     @Test
     fun testAppIdentifier() {
-        val appName = "Anamol QR"
-        assertEquals("Anamol QR", appName)
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val appName = context.getString(R.string.app_name)
+        assertEquals("Anamol Scanner", appName)
     }
 }

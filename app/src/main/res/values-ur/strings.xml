@@ -76,4 +76,42 @@
     <string name="theme_laser_purple">لیزر وائلٹ</string>
     <string name="theme_solar_amber">سولر امبر</string>
     <string name="about_app">انمول کیو آر کوڈ اسکینر - سیکیورٹی ٹولنگ ایڈیشن</string>
+
+    <!-- Quick Settings & Shortcuts -->
+    <string name="quick_tile_scan">انمول اسکینر</string>
+    <string name="shortcut_scan">فوری اسکین</string>
+    <string name="shortcut_scan_long">تیز آپٹیکل اسکینر</string>
+    <string name="shortcut_batch">بیچ موڈ</string>
+    <string name="shortcut_batch_long">مسلسل بیچ اسکینر</string>
+
+    <!-- Continuous Batch Mode -->
+    <string name="batch_mode_title">مسلسل بیچ اسکیننگ موڈ</string>
+    <string name="batch_mode_on">بیچ موڈ: آن</string>
+    <string name="batch_mode_off">بیچ موڈ: آف</string>
+    <string name="batch_scanned_count">بیچ لاگز: %1$d آئٹمز</string>
+    <string name="batch_finish_export">مکمل اور ایکسپورٹ کریں (%1$d)</string>
+    <string name="batch_summary_title">بیچ ٹیلی میٹری خلاصہ</string>
+    <string name="batch_clear">بیچ صاف کریں</string>
+
+    <!-- Automation & Developer Suite -->
+    <string name="section_automation">آٹومیشن اور ڈیولپر سوٹ</string>
+    <string name="automation_intent_title">اسکین انٹینٹس براڈکاسٹ</string>
+    <string name="automation_intent_desc">ٹاسکر یا دیگر ایپس کو ڈیٹا براڈکاسٹ کریں</string>
+    <string name="automation_action_label">انٹینٹ ایکشن کا نام</string>
+    <string name="test_broadcast_btn">ٹیسٹ براڈکاسٹ بھیجیں</string>
+    <string name="automation_webhook_title">ایچ ٹی ٹی پی ویب ہک پوسٹ</string>
+    <string name="automation_webhook_desc">ڈیٹا فوری طور پر ویب سرور کو روانہ کریں</string>
+    <string name="automation_webhook_url_label">ویب ہک یو آر ایل</string>
+    <string name="test_webhook_btn">ویب ہک پنگ ٹیسٹ</string>
+    <string name="webhook_success">ویب ہک کامیاب: HTTP %1$d</string>
+    <string name="webhook_failure">ویب ہک خرابی: %1$s</string>
+    <string name="intent_broadcast_sent">ٹیسٹ براڈکاسٹ روانہ کر دیا گیا</string>
+
+    <!-- Raw Bytes & Inspector -->
+    <string name="tab_hexdump">ہیکس ڈمپ</string>
+    <string name="tab_encodings">انکوڈنگز</string>
+    <string name="tab_byte_array">ڈیسیمل بائٹس</string>
+    <string name="tab_bitstream">بائنری بٹس</string>
+    <string name="error_correction_info">ای سی سی صلاحیت</string>
+    <string name="checksum_verification">چیک سم تصدیق</string>
 </resources>

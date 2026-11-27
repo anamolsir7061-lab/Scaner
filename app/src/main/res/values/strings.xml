@@ -1,79 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Anamol QR</string>
-    <string name="nav_scanner">Scan</string>
-    <string name="nav_screen_scan">Circle Search</string>
-    <string name="nav_generator">Generate</string>
+    <string name="app_name">Anamol Scanner</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_scan">Scan</string>
     <string name="nav_history">History</string>
     <string name="nav_settings">Settings</string>
 
-    <string name="scan_title">OPTICAL DECODER</string>
-    <string name="scan_subtitle">Align QR or Barcode in cyber reticle</string>
-    <string name="torch_on">Flashlight ON</string>
-    <string name="torch_off">Flashlight OFF</string>
-    <string name="import_gallery">Import Image</string>
-    <string name="camera_permission_required">Camera access is required for real-time optical scanning.</string>
-    <string name="grant_camera">Authorize Camera</string>
-    <string name="scan_success">PAYLOAD ACQUIRED</string>
-    <string name="screen_assistant_mode">Circle-to-Search Screen Scanner</string>
-    <string name="screen_assistant_desc">Draw a circle or box over any QR code on screen to decode</string>
+    <!-- Quick Settings & Shortcuts -->
+    <string name="quick_tile_scan">Anamol Scanner</string>
+    <string name="shortcut_qr">QR Scan</string>
+    <string name="shortcut_qr_long">Instant QR &amp; Barcode Scanner</string>
 
-    <string name="inspector_title">SECURITY INSPECTOR</string>
+    <!-- Camera & Scan UI -->
+    <string name="camera_permission_required">Camera access is required to scan QR codes and barcodes offline.</string>
+    <string name="grant_camera">Allow Camera</string>
+    <string name="import_gallery">Gallery</string>
+    <string name="switch_camera">Switch Camera</string>
+    <string name="mode_auto_short">Auto Detect</string>
+    <string name="mode_center_short">Center Box</string>
+    <string name="multi_qr_prompt">%1$d codes detected — tap any marker to open</string>
+    <string name="low_light_torch_hint">Low light detected — tap to turn on flashlight</string>
+    <string name="no_code_in_image">No QR or barcode detected in selected image</string>
+
+    <!-- Result Sheet Actions -->
+    <string name="action_open_link">Open Link</string>
+    <string name="action_connect_wifi">Connect to Wi-Fi</string>
+    <string name="action_save_contact">Save Contact</string>
+    <string name="action_pay_upi">Pay via UPI</string>
+    <string name="action_call_number">Call Number</string>
+    <string name="action_send_sms">Send SMS</string>
+    <string name="action_send_email">Send Email</string>
+    <string name="action_open_location">Open in Maps</string>
+    <string name="action_hex">Hex</string>
+    <string name="unsafe_url_title">Security Warning</string>
+    <string name="action_open_anyway">Open Anyway</string>
+
+    <!-- History Tab -->
+    <string name="history_title">Scan History</string>
+    <string name="history_empty">No QR or barcode scans recorded yet.\nPoint camera at any code to scan automatically.</string>
+    <string name="history_no_matches">No scanned codes match your current search or filter.</string>
+    <string name="search_placeholder">Search payload, format, or type…</string>
+    <string name="history_records_count">%1$d records • Newest first</string>
+    <string name="history_filter_all">All</string>
+    <string name="history_filter_favorites">Bookmarked</string>
+    <string name="history_filter_qr">QR / 2D</string>
+    <string name="history_filter_barcode">1D Barcodes</string>
+    <string name="history_export_json">Export JSON</string>
+    <string name="history_export_csv">Export CSV</string>
+    <string name="history_purge_title">Clear all scan logs?</string>
+    <string name="history_purge_message">All encrypted QR and barcode scan records will be permanently deleted.</string>
+    <string name="history_purge_confirm">Clear All</string>
+    <string name="history_copied">Payload copied to clipboard</string>
+    <string name="tool_qr_history">Scan History</string>
+
+    <!-- Settings & Security -->
+    <string name="settings_title">Settings</string>
+    <string name="section_scanner_prefs">Detection &amp; Marker</string>
+    <string name="pref_detection_mode">Detection Mode</string>
+    <string name="detection_mode_auto">Auto Detect Marker</string>
+    <string name="detection_mode_center">Fixed Center Frame</string>
+    <string name="pref_marker_style">Marker Style</string>
+    <string name="marker_square">Square</string>
+    <string name="marker_circle">Circle</string>
+    <string name="marker_brackets">Brackets</string>
+    <string name="pref_marker_color">Marker Color</string>
+    <string name="pref_animation">Cyber Scan Animation</string>
+    <string name="anim_off">Off</string>
+    <string name="anim_normal">Normal</string>
+    <string name="anim_extreme">Extreme</string>
+
+    <string name="section_behavior">Behavior &amp; Speed</string>
+    <string name="pref_auto_open_link">Auto-Open Safe Links</string>
+    <string name="pref_auto_open_link_desc">Automatically open verified HTTPS URLs on scan</string>
+    <string name="pref_beep">Beep Sound</string>
+    <string name="pref_beep_desc">Play crisp cyber tone on successful decode</string>
+    <string name="pref_vibration">Haptic Vibration</string>
+    <string name="pref_vibration_desc">Vibrate on code lock-on and decode</string>
+    <string name="pref_torch">Flashlight</string>
+    <string name="pref_auto_torch">Low-Light Torch Hint</string>
+    <string name="pref_auto_torch_desc">Suggest flashlight automatically in dark environments</string>
+    <string name="pref_auto_zoom">Auto-Zoom</string>
+    <string name="pref_auto_zoom_desc">Zoom smoothly toward small or distant QR codes</string>
+    <string name="pref_telemetry">Frame Latency HUD</string>
+    <string name="pref_telemetry_desc">Display real-time detection latency (ms/frame)</string>
+
+    <string name="section_appearance">Appearance &amp; Language</string>
+    <string name="theme_mode">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="language_label">Language</string>
+    <string name="lang_english">English</string>
+    <string name="lang_hindi">हिन्दी (Hindi)</string>
+
+    <string name="section_security">Privacy &amp; Security</string>
+    <string name="app_lock_title">App Lock (PIN &amp; Biometric)</string>
+    <string name="app_lock_desc">Require PIN, fingerprint, or face unlock on launch</string>
+    <string name="biometric_unlock_title">Fingerprint / Face Unlock</string>
+    <string name="biometric_unlock_desc">Use device biometrics to unlock Anamol Scanner</string>
+    <string name="set_pin_title">Set 4-Digit Security PIN</string>
+    <string name="change_pin">Change PIN</string>
+    <string name="encryption_badge_title">AES-256-GCM Encrypted History</string>
+    <string name="encryption_badge_desc">100% offline scanning &amp; encrypted local logs. Zero cloud uploads.</string>
+
+    <!-- App Lock Gate -->
+    <string name="lock_title">Anamol Scanner Locked</string>
+    <string name="lock_subtitle">Enter your 4-digit PIN or use biometrics</string>
+    <string name="lock_wrong_pin">Incorrect PIN. Try again.</string>
+    <string name="lock_use_biometric">Unlock with Fingerprint / Face</string>
+    <string name="biometric_prompt_title">Unlock Anamol Scanner</string>
+    <string name="biometric_prompt_subtitle">Verify identity to access encrypted scan history</string>
+
+    <!-- Inspector -->
+    <string name="inspector_title">CODE INSPECTOR</string>
     <string name="raw_payload">RAW PAYLOAD</string>
     <string name="hex_dump">HEXADECIMAL DUMP</string>
     <string name="charset_detected">ENCODING</string>
     <string name="security_rating">THREAT ANALYSIS</string>
-    <string name="security_safe">SECURE / ENCRYPTED</string>
-    <string name="security_warning">UNENCRYPTED / HTTP</string>
+    <string name="security_safe">SECURE / VERIFIED</string>
+    <string name="security_warning">UNENCRYPTED / WARNING</string>
     <string name="security_danger">HIGH RISK / SUSPICIOUS</string>
-    <string name="action_open">OPEN TARGET</string>
-    <string name="action_copy">COPY PAYLOAD</string>
-    <string name="action_share">SHARE DATA</string>
-    <string name="action_connect_wifi">CONNECT WIFI</string>
-    <string name="action_pay_upi">PAY VIA UPI</string>
-    <string name="action_save_contact">ADD CONTACT</string>
-    <string name="wifi_ssid">Network SSID</string>
-    <string name="wifi_password">Password</string>
-    <string name="wifi_encryption">Security</string>
-    <string name="upi_payee">Payee</string>
-    <string name="upi_id">VPA / UPI ID</string>
-    <string name="upi_amount">Amount</string>
 
-    <string name="gen_title">MATRIX SYNTHESIZER</string>
-    <string name="gen_type_text">Text</string>
-    <string name="gen_type_url">URL</string>
-    <string name="gen_type_wifi">WiFi</string>
-    <string name="gen_type_upi">UPI</string>
-    <string name="gen_type_contact">Contact</string>
-    <string name="error_correction">Error Correction</string>
-    <string name="color_foreground">Neon Foreground</string>
-    <string name="color_background">Background</string>
-    <string name="generate_btn">SYNTHESIZE QR</string>
-    <string name="export_png">EXPORT PNG</string>
-    <string name="share_qr">SHARE QR</string>
-
-    <string name="history_title">ENCRYPTED LOGS</string>
-    <string name="history_empty">No scans recorded yet</string>
-    <string name="search_placeholder">Search payloads, URLs, WiFi...</string>
-    <string name="export_json">Export JSON</string>
-    <string name="export_csv">Export CSV</string>
-    <string name="clear_all">Purge Database</string>
-    <string name="bookmarked_only">Favorites</string>
-
-    <string name="settings_title">CONTROL HUB</string>
-    <string name="section_general">GENERAL</string>
-    <string name="language">Language / भाषा / زبان</string>
-    <string name="section_haptics">HAPTICS &amp; AUDIO</string>
-    <string name="haptic_profile">Haptic Vibration</string>
-    <string name="audio_chirp">Cyber Chirp Sound</string>
-    <string name="section_assistant">ASSISTANT &amp; OVERLAY</string>
-    <string name="set_default_assistant">Default Digital Assistant</string>
-    <string name="floating_overlay_switch">Floating Screen Scanner Badge</string>
-    <string name="circle_to_search_hint">Trigger screen scanner by long-pressing home or tapping overlay</string>
-    <string name="section_theme">CYBER THEME PALETTE</string>
-    <string name="theme_matrix_green">Matrix Green</string>
-    <string name="theme_neon_cyan">Cyber Cyan</string>
-    <string name="theme_laser_purple">Laser Violet</string>
-    <string name="theme_solar_amber">Solar Amber</string>
-    <string name="about_app">Anamol QR Code Scanner - Security Tooling Edition</string>
+    <!-- Common Actions -->
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="done">Done</string>
+    <string name="copy">Copy</string>
+    <string name="close">Close</string>
+    <string name="share_file">Share</string>
+    <string name="delete_doc">Delete</string>
 </resources>

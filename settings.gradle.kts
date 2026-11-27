@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Anamol QR"
+rootProject.name = "Anamol Scanner"
 
 include(":app")

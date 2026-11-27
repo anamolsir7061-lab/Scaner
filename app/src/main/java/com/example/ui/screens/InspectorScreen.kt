@@ -141,7 +141,7 @@ fun InspectorScreen(
                 onClick = {
                     isBookmarked = !isBookmarked
                     coroutineScope.launch {
-                        app?.repository?.recordScan(
+                        app?.scanRepository?.recordScan(
                             rawContent = report.raw,
                             format = report.format,
                             parsedType = report.mimeType,

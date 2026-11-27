@@ -6,11 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,277 +19,313 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.BookmarkBorder
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.FileDownload
+import androidx.compose.material.icons.rounded.QrCode2
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.AnamolApplication
 import com.example.R
+import com.example.analyzer.BarcodeFormatHelper
 import com.example.data.model.ScanItem
-import com.example.ui.theme.CyberBackground
-import com.example.ui.theme.CyberCard
-import com.example.ui.theme.CyberCardBorder
-import com.example.ui.theme.CyberTextMuted
-import com.example.ui.theme.CyberTextPrimary
-import com.example.ui.theme.CyberTextSecondary
-import com.example.ui.theme.MatrixGreen
-import com.example.ui.theme.MonospaceFont
-import com.example.ui.theme.NeonCrimson
-import com.example.ui.theme.NeonCyan
-import com.example.ui.theme.SolarAmber
-import com.example.ui.theme.ThreatDanger
-import com.example.ui.theme.ThreatSafe
-import com.example.ui.theme.ThreatWarning
-import kotlinx.coroutines.launch
+import com.example.ui.theme.JetBrainsMonoFont
+import com.example.ui.theme.StatusDanger
+import com.example.ui.theme.StatusSuccess
+import com.example.ui.theme.StatusWarning
+import com.example.ui.viewmodel.ScanHistoryFilter
+import com.example.ui.viewmodel.ScanHistoryViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun HistoryScreen(
+    viewModel: ScanHistoryViewModel,
     onInspectItem: (raw: String, format: String) -> Unit
 ) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    val app = context.applicationContext as? AnamolApplication ?: return
-
-    val scans by app.repository.allScans.collectAsStateWithLifecycle(initialValue = emptyList())
-    var searchQuery by remember { mutableStateOf("") }
-    var favoritesOnly by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showPurgeDialog by remember { mutableStateOf(false) }
-
-    val filteredScans = scans.filter { item ->
-        val matchesQuery = searchQuery.isBlank() ||
-                item.rawContent.contains(searchQuery, ignoreCase = true) ||
-                item.title.contains(searchQuery, ignoreCase = true) ||
-                item.parsedType.contains(searchQuery, ignoreCase = true)
-        val matchesFav = !favoritesOnly || item.isBookmarked
-        matchesQuery && matchesFav
-    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(CyberBackground)
+            .background(MaterialTheme.colorScheme.background)
+            .statusBarsPadding()
     ) {
-        // Top Header
+        // Header summary & batch export controls
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 44.dp, start = 20.dp, end = 20.dp, bottom = 8.dp),
+                .padding(horizontal = 20.dp, vertical = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(10.dp).background(MatrixGreen, CircleShape))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.history_title),
-                        color = NeonCyan,
-                        fontFamily = MonospaceFont,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                }
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "${scans.size} TELEMETRY RECORDS STORED",
-                    color = CyberTextSecondary,
-                    fontFamily = MonospaceFont,
-                    fontSize = 11.sp
+                    text = stringResource(R.string.history_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.history_records_count, uiState.totalCount),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Row {
-                // Export JSON
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 IconButton(
                     onClick = {
-                        val json = app.repository.exportToJson(filteredScans)
+                        val json = viewModel.exportJson(uiState.items)
                         val sendIntent = Intent(Intent.ACTION_SEND).apply {
                             putExtra(Intent.EXTRA_TEXT, json)
                             type = "application/json"
                         }
-                        context.startActivity(Intent.createChooser(sendIntent, "Export JSON"))
+                        context.startActivity(Intent.createChooser(sendIntent, context.getString(R.string.history_export_json)))
                     },
+                    enabled = uiState.items.isNotEmpty(),
                     modifier = Modifier
-                        .size(36.dp)
-                        .background(CyberCard, CircleShape)
-                        .border(1.dp, CyberCardBorder, CircleShape)
+                        .size(48.dp)
+                        .testTag("history_export_json")
                 ) {
-                    Icon(Icons.Default.Share, contentDescription = "Export JSON", tint = NeonCyan, modifier = Modifier.size(16.dp))
+                    Icon(
+                        imageVector = Icons.Rounded.Share,
+                        contentDescription = stringResource(R.string.history_export_json),
+                        tint = if (uiState.items.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    )
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // Purge All
                 IconButton(
                     onClick = { showPurgeDialog = true },
+                    enabled = uiState.totalCount > 0,
                     modifier = Modifier
-                        .size(36.dp)
-                        .background(CyberCard, CircleShape)
-                        .border(1.dp, NeonCrimson.copy(alpha = 0.5f), CircleShape)
+                        .size(48.dp)
+                        .testTag("history_purge_all")
                 ) {
-                    Icon(Icons.Default.DeleteSweep, contentDescription = "Purge All", tint = NeonCrimson, modifier = Modifier.size(18.dp))
+                    Icon(
+                        imageVector = Icons.Rounded.DeleteSweep,
+                        contentDescription = stringResource(R.string.history_purge_confirm),
+                        tint = if (uiState.totalCount > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    )
                 }
             }
         }
 
-        // Search Bar
+        // Reactive Room search bar
         OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            placeholder = { Text(stringResource(R.string.search_placeholder), fontFamily = MonospaceFont, fontSize = 12.sp, color = CyberTextMuted) },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = NeonCyan) },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = NeonCyan,
-                unfocusedBorderColor = CyberCardBorder,
-                focusedContainerColor = CyberCard,
-                unfocusedContainerColor = CyberCard,
-                focusedTextColor = CyberTextPrimary,
-                unfocusedTextColor = CyberTextPrimary
-            ),
-            shape = RoundedCornerShape(12.dp),
+            value = uiState.searchQuery,
+            onValueChange = { viewModel.setSearchQuery(it) },
+            placeholder = { Text(stringResource(R.string.search_placeholder)) },
+            leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
+            trailingIcon = {
+                if (uiState.searchQuery.isNotEmpty()) {
+                    IconButton(
+                        onClick = { viewModel.setSearchQuery("") },
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.close))
+                    }
+                }
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(14.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 6.dp)
+                .padding(horizontal = 20.dp)
+                .testTag("history_search_input")
         )
 
-        // Filter Chips & Export CSV
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Filter Chips + CSV Export
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             FilterChip(
-                selected = favoritesOnly,
-                onClick = { favoritesOnly = !favoritesOnly },
-                label = { Text("Favorites Only", fontFamily = MonospaceFont, fontSize = 11.sp) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = SolarAmber,
-                    selectedLabelColor = Color.Black
-                )
+                selected = uiState.activeFilter == ScanHistoryFilter.ALL,
+                onClick = { viewModel.setFilter(ScanHistoryFilter.ALL) },
+                label = { Text(stringResource(R.string.history_filter_all)) },
+                modifier = Modifier.testTag("history_filter_all")
             )
-
-            Button(
+            FilterChip(
+                selected = uiState.activeFilter == ScanHistoryFilter.BOOKMARKED,
+                onClick = { viewModel.setFilter(ScanHistoryFilter.BOOKMARKED) },
+                leadingIcon = {
+                    Icon(Icons.Rounded.Bookmark, contentDescription = null, modifier = Modifier.size(16.dp))
+                },
+                label = { Text(stringResource(R.string.history_filter_favorites)) },
+                modifier = Modifier.testTag("history_filter_favorites")
+            )
+            FilterChip(
+                selected = uiState.activeFilter == ScanHistoryFilter.TWO_D,
+                onClick = { viewModel.setFilter(ScanHistoryFilter.TWO_D) },
+                leadingIcon = {
+                    Icon(Icons.Rounded.QrCode2, contentDescription = null, modifier = Modifier.size(16.dp))
+                },
+                label = { Text(stringResource(R.string.history_filter_qr)) },
+                modifier = Modifier.testTag("history_filter_qr")
+            )
+            FilterChip(
+                selected = uiState.activeFilter == ScanHistoryFilter.ONE_D,
+                onClick = { viewModel.setFilter(ScanHistoryFilter.ONE_D) },
+                label = { Text(stringResource(R.string.history_filter_barcode)) },
+                modifier = Modifier.testTag("history_filter_barcode")
+            )
+            OutlinedButton(
                 onClick = {
-                    val csv = app.repository.exportToCsv(filteredScans)
+                    val csv = viewModel.exportCsv(uiState.items)
                     val sendIntent = Intent(Intent.ACTION_SEND).apply {
                         putExtra(Intent.EXTRA_TEXT, csv)
                         type = "text/csv"
                     }
-                    context.startActivity(Intent.createChooser(sendIntent, "Export CSV"))
+                    context.startActivity(Intent.createChooser(sendIntent, context.getString(R.string.history_export_csv)))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.12f)),
-                shape = RoundedCornerShape(8.dp)
+                enabled = uiState.items.isNotEmpty(),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier.testTag("history_export_csv")
             ) {
-                Icon(Icons.Default.FileDownload, contentDescription = null, tint = MatrixGreen, modifier = Modifier.size(14.dp))
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Export CSV", color = MatrixGreen, fontFamily = MonospaceFont, fontSize = 11.sp)
+                Icon(Icons.Rounded.FileDownload, contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(stringResource(R.string.history_export_csv), fontSize = 12.sp)
             }
         }
 
-        // Log Items List
-        if (filteredScans.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.history_empty),
-                    color = CyberTextSecondary,
-                    fontFamily = MonospaceFont,
-                    fontSize = 13.sp
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                items(filteredScans, key = { it.id }) { item ->
-                    ScanHistoryItemCard(
-                        item = item,
-                        onClick = { onInspectItem(item.rawContent, item.format) },
-                        onToggleBookmark = {
-                            coroutineScope.launch { app.repository.toggleBookmark(item) }
-                        },
-                        onDelete = {
-                            coroutineScope.launch { app.repository.delete(item) }
-                        }
-                    )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // List View sorted by timestamp DESC
+        when {
+            uiState.isLoading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-                item {
-                    Spacer(modifier = Modifier.height(30.dp))
+            }
+            uiState.items.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(32.dp)
+                        .testTag("history_empty_state"),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Rounded.QrCodeScanner,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f),
+                            modifier = Modifier.size(56.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = if (uiState.totalCount == 0) {
+                                stringResource(R.string.history_empty)
+                            } else {
+                                stringResource(R.string.history_no_matches)
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp)
+                        .testTag("scan_history_list"),
+                    contentPadding = PaddingValues(top = 4.dp, bottom = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    items(uiState.items, key = { it.id }) { item ->
+                        ScanHistoryItemCard(
+                            item = item,
+                            onClick = { onInspectItem(item.rawContent, item.format) },
+                            onCopy = {
+                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                clipboard.setPrimaryClip(ClipData.newPlainText("Scanned Code", item.rawContent))
+                                Toast.makeText(context, context.getString(R.string.history_copied), Toast.LENGTH_SHORT).show()
+                            },
+                            onToggleBookmark = { viewModel.toggleBookmark(item) },
+                            onDelete = { viewModel.deleteItem(item) }
+                        )
+                    }
                 }
             }
         }
     }
 
-    // Purge confirmation dialog
     if (showPurgeDialog) {
         AlertDialog(
             onDismissRequest = { showPurgeDialog = false },
-            title = { Text("PURGE TELEMETRY DATABASE?", color = NeonCrimson, fontFamily = MonospaceFont, fontWeight = FontWeight.Bold) },
-            text = { Text("All scanned logs and encrypted telemetry will be permanently destroyed.", color = CyberTextPrimary) },
-            containerColor = CyberCard,
+            title = { Text(stringResource(R.string.history_purge_title)) },
+            text = { Text(stringResource(R.string.history_purge_message)) },
             confirmButton = {
                 Button(
                     onClick = {
-                        coroutineScope.launch { app.repository.clearAll() }
+                        viewModel.clearAll()
                         showPurgeDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = NeonCrimson)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("PURGE ALL", color = Color.White, fontFamily = MonospaceFont, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.history_purge_confirm))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showPurgeDialog = false }) {
-                    Text("CANCEL", color = CyberTextSecondary, fontFamily = MonospaceFont)
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -299,84 +336,160 @@ fun HistoryScreen(
 private fun ScanHistoryItemCard(
     item: ScanItem,
     onClick: () -> Unit,
+    onCopy: () -> Unit,
     onToggleBookmark: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US) }
+    val dateFormat = remember { SimpleDateFormat("MMM dd, yyyy • HH:mm:ss", Locale.getDefault()) }
     val formattedDate = remember(item.timestamp) { dateFormat.format(Date(item.timestamp)) }
+    val formatLabel = remember(item.format) { BarcodeFormatHelper.getDisplayName(item.format) }
+
+    val securityColor = when (item.securityRating) {
+        "SAFE" -> StatusSuccess
+        "WARNING" -> StatusWarning
+        else -> StatusDanger
+    }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, CyberCardBorder, RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = CyberCard),
-        shape = RoundedCornerShape(12.dp)
+            .clickable(onClick = onClick)
+            .testTag("scan_history_item_${item.id}"),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(14.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(start = 14.dp, end = 6.dp, top = 12.dp, bottom = 10.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            // Top metadata badges + timestamp
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer
+                    ) {
+                        Text(
+                            text = formatLabel,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                        )
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = securityColor.copy(alpha = 0.14f)
+                    ) {
+                        Text(
+                            text = item.securityRating,
+                            color = securityColor,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                        )
+                    }
+                }
+
+                Text(
+                    text = formattedDate,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = item.format,
-                        color = NeonCyan,
-                        fontFamily = MonospaceFont,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp
+                        text = item.title.ifBlank { item.rawContent },
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.height(3.dp))
                     Text(
-                        text = item.securityRating,
-                        color = when (item.securityRating) {
-                            "SAFE" -> ThreatSafe
-                            "WARNING" -> ThreatWarning
-                            else -> ThreatDanger
-                        },
-                        fontFamily = MonospaceFont,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold
+                        text = item.rawContent,
+                        fontFamily = JetBrainsMonoFont,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = formattedDate,
-                        color = CyberTextMuted,
-                        fontFamily = MonospaceFont,
-                        fontSize = 10.sp
+                    if (item.parsedType.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = item.parsedType,
+                            fontFamily = JetBrainsMonoFont,
+                            fontSize = 10.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                // Action icon buttons (>= 48dp touch target)
+                IconButton(
+                    onClick = onCopy,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .testTag("history_copy_${item.id}")
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.ContentCopy,
+                        contentDescription = stringResource(R.string.copy),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                IconButton(
+                    onClick = onToggleBookmark,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .testTag("history_bookmark_${item.id}")
+                ) {
+                    Icon(
+                        imageVector = if (item.isBookmarked) Icons.Rounded.Bookmark else Icons.Rounded.BookmarkBorder,
+                        contentDescription = stringResource(R.string.history_filter_favorites),
+                        tint = if (item.isBookmarked) StatusWarning else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
 
-                Text(
-                    text = item.title.ifBlank { item.rawContent },
-                    color = CyberTextPrimary,
-                    fontFamily = MonospaceFont,
-                    fontSize = 13.sp,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            IconButton(onClick = onToggleBookmark, modifier = Modifier.size(32.dp)) {
-                Icon(
-                    imageVector = if (item.isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                    contentDescription = "Bookmark",
-                    tint = if (item.isBookmarked) SolarAmber else CyberTextMuted,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-
-            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = CyberTextMuted,
-                    modifier = Modifier.size(18.dp)
-                )
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .testTag("history_delete_${item.id}")
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.DeleteOutline,
+                        contentDescription = stringResource(R.string.delete_doc),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }

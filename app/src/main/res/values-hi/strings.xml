@@ -1,79 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">अनमोल क्यूआर</string>
-    <string name="nav_scanner">स्कैन</string>
-    <string name="nav_screen_scan">सर्कल सर्च</string>
-    <string name="nav_generator">बनाएं</string>
+    <string name="app_name">अनमोल स्कैनर</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_scan">स्कैन</string>
     <string name="nav_history">इतिहास</string>
     <string name="nav_settings">सेटिंग्स</string>
 
-    <string name="scan_title">ऑप्टिकल डिकोडर</string>
-    <string name="scan_subtitle">क्यूआर या बारकोड को साइबर रेटिकल में रखें</string>
-    <string name="torch_on">टॉर्च चालू</string>
-    <string name="torch_off">टॉर्च बंद</string>
-    <string name="import_gallery">गैलरी से चुनें</string>
-    <string name="camera_permission_required">स्कैन करने के लिए कैमरा अनुमति आवश्यक है।</string>
-    <string name="grant_camera">कैमरा अनुमति दें</string>
-    <string name="scan_success">डेटा प्राप्त हुआ</string>
-    <string name="screen_assistant_mode">सर्कल-टू-सर्च स्क्रीन स्कैनर</string>
-    <string name="screen_assistant_desc">स्क्रीन पर किसी भी क्यूआर पर गोला बनाकर स्कैन करें</string>
+    <!-- Quick Settings & Shortcuts -->
+    <string name="quick_tile_scan">अनमोल स्कैनर</string>
+    <string name="shortcut_qr">क्यूआर स्कैन</string>
+    <string name="shortcut_qr_long">त्वरित क्यूआर और बारकोड स्कैनर</string>
 
-    <string name="inspector_title">सुरक्षा विश्लेषक</string>
-    <string name="raw_payload">कच्चा डेटा (Raw Payload)</string>
+    <!-- Camera & Scan UI -->
+    <string name="camera_permission_required">क्यूआर कोड और बारकोड ऑफ़लाइन स्कैन करने के लिए कैमरा अनुमति आवश्यक है।</string>
+    <string name="grant_camera">कैमरा अनुमति दें</string>
+    <string name="import_gallery">गैलरी</string>
+    <string name="switch_camera">कैमरा बदलें</string>
+    <string name="mode_auto_short">ऑटो डिटेक्ट</string>
+    <string name="mode_center_short">सेंटर बॉक्स</string>
+    <string name="multi_qr_prompt">%1$d कोड मिले — खोलने के लिए किसी मार्कर पर टैप करें</string>
+    <string name="low_light_torch_hint">कम रोशनी — फ़्लैशलाइट चालू करने के लिए टैप करें</string>
+    <string name="no_code_in_image">चयनित फ़ोटो में कोई क्यूआर या बारकोड नहीं मिला</string>
+
+    <!-- Result Sheet Actions -->
+    <string name="action_open_link">लिंक खोलें</string>
+    <string name="action_connect_wifi">वाई-फ़ाई से जुड़ें</string>
+    <string name="action_save_contact">संपर्क सहेजें</string>
+    <string name="action_pay_upi">UPI से भुगतान करें</string>
+    <string name="action_call_number">कॉल करें</string>
+    <string name="action_send_sms">SMS भेजें</string>
+    <string name="action_send_email">ईमेल भेजें</string>
+    <string name="action_open_location">मैप्स में खोलें</string>
+    <string name="action_hex">हेक्स</string>
+    <string name="unsafe_url_title">सुरक्षा चेतावनी</string>
+    <string name="action_open_anyway">फिर भी खोलें</string>
+
+    <!-- History Tab -->
+    <string name="history_title">स्कैन इतिहास</string>
+    <string name="history_empty">अभी तक कोई क्यूआर या बारकोड स्कैन नहीं हुआ।\nऑटो-स्कैन के लिए कैमरे को कोड की ओर रखें।</string>
+    <string name="history_no_matches">आपकी खोज या फ़िल्टर से कोई स्कैन मेल नहीं खाता।</string>
+    <string name="search_placeholder">डेटा, फ़ॉर्मेट या प्रकार खोजें…</string>
+    <string name="history_records_count">%1$d रिकॉर्ड • नवीनतम पहले</string>
+    <string name="history_filter_all">सभी</string>
+    <string name="history_filter_favorites">बुकमार्क</string>
+    <string name="history_filter_qr">QR / 2D</string>
+    <string name="history_filter_barcode">1D बारकोड</string>
+    <string name="history_export_json">JSON निर्यात</string>
+    <string name="history_export_csv">CSV निर्यात</string>
+    <string name="history_purge_title">सभी स्कैन लॉग हटाएं?</string>
+    <string name="history_purge_message">सभी एन्क्रिप्टेड क्यूआर और बारकोड रिकॉर्ड स्थायी रूप से हटा दिए जाएंगे।</string>
+    <string name="history_purge_confirm">सभी हटाएं</string>
+    <string name="history_copied">डेटा क्लिपबोर्ड पर कॉपी हो गया</string>
+    <string name="tool_qr_history">स्कैन इतिहास</string>
+
+    <!-- Settings & Security -->
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="section_scanner_prefs">डिटेक्शन और मार्कर</string>
+    <string name="pref_detection_mode">डिटेक्शन मोड</string>
+    <string name="detection_mode_auto">ऑटो डिटेक्ट मार्कर</string>
+    <string name="detection_mode_center">फिक्स्ड सेंटर फ्रेम</string>
+    <string name="pref_marker_style">मार्कर शैली</string>
+    <string name="marker_square">स्क्वायर</string>
+    <string name="marker_circle">सर्कल</string>
+    <string name="marker_brackets">ब्रैकेट्स</string>
+    <string name="pref_marker_color">मार्कर रंग</string>
+    <string name="pref_animation">साइबर स्कैन एनीमेशन</string>
+    <string name="anim_off">बंद</string>
+    <string name="anim_normal">सामान्य</string>
+    <string name="anim_extreme">एक्सट्रीम</string>
+
+    <string name="section_behavior">व्यवहार और गति</string>
+    <string name="pref_auto_open_link">सुरक्षित लिंक स्वतः खोलें</string>
+    <string name="pref_auto_open_link_desc">स्कैन के बाद सत्यापित HTTPS लिंक अपने आप खोलें</string>
+    <string name="pref_beep">बीप ध्वनि</string>
+    <string name="pref_beep_desc">सफल डिकोड पर साइबर टोन बजाएं</string>
+    <string name="pref_vibration">हैप्टिक वाइब्रेशन</string>
+    <string name="pref_vibration_desc">कोड लॉक-ऑन और डिकोड पर वाइब्रेट करें</string>
+    <string name="pref_torch">फ़्लैशलाइट</string>
+    <string name="pref_auto_torch">कम रोशनी टॉर्च सुझाव</string>
+    <string name="pref_auto_torch_desc">अंधेरे में फ़्लैशलाइट का सुझाव दें</string>
+    <string name="pref_auto_zoom">ऑटो-ज़ूम</string>
+    <string name="pref_auto_zoom_desc">छोटे या दूर के क्यूआर कोड पर स्वतः ज़ूम करें</string>
+    <string name="pref_telemetry">फ़्रेम लेटेंसी HUD</string>
+    <string name="pref_telemetry_desc">लाइव डिटेक्शन गति (ms/फ़्रेम) दिखाएं</string>
+
+    <string name="section_appearance">दिखावट और भाषा</string>
+    <string name="theme_mode">थीम</string>
+    <string name="theme_system">सिस्टम</string>
+    <string name="theme_dark">डार्क</string>
+    <string name="theme_light">लाइट</string>
+    <string name="language_label">भाषा</string>
+    <string name="lang_english">English</string>
+    <string name="lang_hindi">हिन्दी (Hindi)</string>
+
+    <string name="section_security">गोपनीयता और सुरक्षा</string>
+    <string name="app_lock_title">ऐप लॉक (PIN व बायोमेट्रिक)</string>
+    <string name="app_lock_desc">ऐप खोलने पर PIN, फ़िंगरप्रिंट या फ़ेस अनलॉक मांगें</string>
+    <string name="biometric_unlock_title">फ़िंगरप्रिंट / फ़ेस अनलॉक</string>
+    <string name="biometric_unlock_desc">अनमोल स्कैनर को अनलॉक करने के लिए बायोमेट्रिक्स का उपयोग करें</string>
+    <string name="set_pin_title">4-अंकों का सुरक्षा PIN सेट करें</string>
+    <string name="change_pin">PIN बदलें</string>
+    <string name="encryption_badge_title">AES-256-GCM एन्क्रिप्टेड इतिहास</string>
+    <string name="encryption_badge_desc">100% ऑफ़लाइन स्कैनिंग और एन्क्रिप्टेड लॉग। कोई क्लाउड अपलोड नहीं।</string>
+
+    <!-- App Lock Gate -->
+    <string name="lock_title">अनमोल स्कैनर लॉक है</string>
+    <string name="lock_subtitle">अपना 4-अंकों का PIN दर्ज करें या बायोमेट्रिक्स का उपयोग करें</string>
+    <string name="lock_wrong_pin">गलत PIN। पुनः प्रयास करें।</string>
+    <string name="lock_use_biometric">फ़िंगरप्रिंट / फ़ेस से अनलॉक करें</string>
+    <string name="biometric_prompt_title">अनमोल स्कैनर अनलॉक करें</string>
+    <string name="biometric_prompt_subtitle">एन्क्रिप्टेड स्कैन इतिहास देखने के लिए पहचान सत्यापित करें</string>
+
+    <!-- Inspector -->
+    <string name="inspector_title">कोड विश्लेषक</string>
+    <string name="raw_payload">कच्चा डेटा</string>
     <string name="hex_dump">हेक्साडेसिमल डंप</string>
     <string name="charset_detected">एन्कोडिंग</string>
     <string name="security_rating">सुरक्षा विश्लेषण</string>
-    <string name="security_safe">सुरक्षित / एन्क्रिप्टेड</string>
-    <string name="security_warning">असुरक्षित / HTTP</string>
+    <string name="security_safe">सुरक्षित / सत्यापित</string>
+    <string name="security_warning">असुरक्षित / चेतावनी</string>
     <string name="security_danger">उच्च जोखिम / संदिग्ध</string>
-    <string name="action_open">खोलें</string>
-    <string name="action_copy">कॉपी करें</string>
-    <string name="action_share">शेयर करें</string>
-    <string name="action_connect_wifi">वाईफाई कनेक्ट करें</string>
-    <string name="action_pay_upi">यूपीआई से भुगतान करें</string>
-    <string name="action_save_contact">संपर्क सहेजें</string>
-    <string name="wifi_ssid">नेटवर्क नाम (SSID)</string>
-    <string name="wifi_password">पासवर्ड</string>
-    <string name="wifi_encryption">सुरक्षा प्रकार</string>
-    <string name="upi_payee">प्राप्तकर्ता</string>
-    <string name="upi_id">यूपीआई आईडी</string>
-    <string name="upi_amount">राशि</string>
 
-    <string name="gen_title">मैट्रिक्स जनरेटर</string>
-    <string name="gen_type_text">टेक्स्ट</string>
-    <string name="gen_type_url">वेबसाइट URL</string>
-    <string name="gen_type_wifi">वाईफाई</string>
-    <string name="gen_type_upi">यूपीआई</string>
-    <string name="gen_type_contact">संपर्क (vCard)</string>
-    <string name="error_correction">त्रुटि सुधार (ECC)</string>
-    <string name="color_foreground">नियॉन रंग</string>
-    <string name="color_background">पृष्ठभूमि रंग</string>
-    <string name="generate_btn">क्यूआर बनाएं</string>
-    <string name="export_png">PNG निर्यात करें</string>
-    <string name="share_qr">क्यूआर शेयर करें</string>
-
-    <string name="history_title">एन्क्रिप्टेड लॉग</string>
-    <string name="history_empty">कोई स्कैन रिकॉर्ड नहीं मिला</string>
-    <string name="search_placeholder">सर्च करें (URL, वाईफाई, टेक्स्ट)...</string>
-    <string name="export_json">JSON निर्यात</string>
-    <string name="export_csv">CSV निर्यात</string>
-    <string name="clear_all">सभी लॉग हटाएं</string>
-    <string name="bookmarked_only">पसंदीदा</string>
-
-    <string name="settings_title">नियंत्रण केंद्र</string>
-    <string name="section_general">सामान्य</string>
-    <string name="language">भाषा (Language)</string>
-    <string name="section_haptics">हैप्टिक्स और ध्वनि</string>
-    <string name="haptic_profile">वाइब्रेशन तीव्रता</string>
-    <string name="audio_chirp">स्कैन बीप ध्वनि</string>
-    <string name="section_assistant">असिस्टेंट एवं फ्लोटिंग ओवरले</string>
-    <string name="set_default_assistant">डिफ़ॉल्ट डिजिटल असिस्टेंट चुनें</string>
-    <string name="floating_overlay_switch">फ्लोटिंग स्क्रीन स्कैनर बटन</string>
-    <string name="circle_to_search_hint">होम बटन दबाकर या फ्लोटिंग बटन से स्क्रीन स्कैन करें</string>
-    <string name="section_theme">साइबर थीम</string>
-    <string name="theme_matrix_green">मैट्रिक्स ग्रीन</string>
-    <string name="theme_neon_cyan">साइबर सियान</string>
-    <string name="theme_laser_purple">लेजर वॉयलेट</string>
-    <string name="theme_solar_amber">सोलर एम्बर</string>
-    <string name="about_app">अनमोल क्यूआर कोड स्कैनर - सुरक्षा टूल संस्करण</string>
+    <!-- Common Actions -->
+    <string name="cancel">रद्द करें</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="done">पूर्ण</string>
+    <string name="copy">कॉपी करें</string>
+    <string name="close">बंद करें</string>
+    <string name="share_file">शेयर करें</string>
+    <string name="delete_doc">हटाएं</string>
 </resources>

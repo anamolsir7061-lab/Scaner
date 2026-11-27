@@ -50,4 +50,49 @@ class HackerDataInspectorTest {
         assertTrue(report.hexDump.contains("00000000:"))
         assertTrue(report.hexDump.contains("HELLO WORLD"))
     }
+
+    @Test
+    fun testShortenedUrlSafetyWarning() {
+        val report = HackerDataInspector.inspect("https://bit.ly/3xYzAbc")
+        assertEquals(ThreatLevel.WARNING, report.threatLevel)
+        assertTrue(report.payload is ParsedPayload.Url)
+        assertTrue((report.payload as ParsedPayload.Url).isShortenedUrl)
+    }
+
+    @Test
+    fun testMecardContactParsing() {
+        val report = HackerDataInspector.inspect("MECARD:N:Anamol;TEL:+911234567890;EMAIL:a@b.com;;")
+        assertTrue(report.payload is ParsedPayload.VCard)
+        val contact = report.payload as ParsedPayload.VCard
+        assertEquals("Anamol", contact.formattedName)
+        assertEquals(listOf("+911234567890"), contact.phoneNumbers)
+        assertEquals(listOf("a@b.com"), contact.emails)
+    }
+
+    @Test
+    fun testCoordinateMapperAndAutoZoom() {
+        val mapped = com.example.scanner.QrCoordinateMapper.mapToNormalizedOverlay(
+            rawValue = "TEST",
+            formatName = "QR Code",
+            formatCode = 256,
+            cornerPoints = null,
+            boundingBox = null,
+            imageWidth = 1280,
+            imageHeight = 720,
+            rotationDegrees = 90,
+            viewWidth = 1080f,
+            viewHeight = 2400f
+        )
+        assertTrue(mapped.centerX in 0f..1f)
+        assertTrue(mapped.centerY in 0f..1f)
+
+        val zoom = com.example.scanner.QrCoordinateMapper.computeSuggestedZoom(
+            currentZoom = 1.0f,
+            maxZoom = 4.0f,
+            barcodeWidthRatio = 0.08f,
+            barcodeHeightRatio = 0.08f
+        )
+        assertNotNull(zoom)
+        assertTrue(zoom!! > 1.0f)
+    }
 }

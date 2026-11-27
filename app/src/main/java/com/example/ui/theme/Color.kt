@@ -2,43 +2,61 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Cyberpunk OLED Base
+// Anamol Scanner Brand Tokens (Dark & Light Material 3)
+val EmeraldPrimaryDark = Color(0xFF00E5A3)
+val EmeraldPrimaryLight = Color(0xFF007E5D)
+val CyanAccentDark = Color(0xFF38BDF8)
+val CyanAccentLight = Color(0xFF0284C7)
+
+// Dark Surfaces (Slate-Obsidian)
+val DarkBackground = Color(0xFF090D14)
+val DarkSurface = Color(0xFF101622)
+val DarkSurfaceVariant = Color(0xFF172030)
+val DarkOutline = Color(0xFF283548)
+val DarkTextPrimary = Color(0xFFF1F5F9)
+val DarkTextSecondary = Color(0xFF94A3B8)
+
+// Light Surfaces (Crisp Paper Daylight)
+val LightBackground = Color(0xFFF8FAFC)
+val LightSurface = Color(0xFFFFFFFF)
+val LightSurfaceVariant = Color(0xFFEEF2F6)
+val LightOutline = Color(0xFFCBD5E1)
+val LightTextPrimary = Color(0xFF0F172A)
+val LightTextSecondary = Color(0xFF475569)
+
+// Status & Semantic Tokens
+val StatusSuccess = Color(0xFF10B981)
+val StatusWarning = Color(0xFFF59E0B)
+val StatusDanger = Color(0xFFEF4444)
+
+// Legacy / Inspector Accent Aliases
 val OledBlack = Color(0xFF000000)
-val CyberBackground = Color(0xFF05080F)
-val CyberSurface = Color(0xFF0D121F)
-val CyberCard = Color(0xFF131A2B)
-val CyberCardBorder = Color(0xFF1E283D)
-val CyberTextPrimary = Color(0xFFF0F6FC)
-val CyberTextSecondary = Color(0xFF8B949E)
-val CyberTextMuted = Color(0xFF484F58)
+val CyberBackground = DarkBackground
+val CyberSurface = DarkSurface
+val CyberCard = DarkSurfaceVariant
+val CyberCardBorder = DarkOutline
+val CyberTextPrimary = DarkTextPrimary
+val CyberTextSecondary = DarkTextSecondary
+val CyberTextMuted = Color(0xFF64748B)
+val NeonCyan = Color(0xFF38BDF8)
+val MatrixGreen = Color(0xFF00E5A3)
+val LaserViolet = Color(0xFFA855F7)
+val SolarAmber = Color(0xFFF59E0B)
+val NeonCrimson = Color(0xFFEF4444)
+val ThreatSafe = Color(0xFF10B981)
+val ThreatSafeBg = Color(0xFF064E3B)
+val ThreatWarning = Color(0xFFF59E0B)
+val ThreatWarningBg = Color(0xFF451A03)
+val ThreatDanger = Color(0xFFEF4444)
+val ThreatDangerBg = Color(0xFF450A0A)
 
-// Neon Accents
-val NeonCyan = Color(0xFF00F0FF)
-val NeonCyanDark = Color(0xFF009AA3)
-val MatrixGreen = Color(0xFF00FF66)
-val MatrixGreenDark = Color(0xFF00A340)
-val LaserViolet = Color(0xFFBD00FF)
-val LaserVioletDark = Color(0xFF7A00A3)
-val SolarAmber = Color(0xFFFFB800)
-val SolarAmberDark = Color(0xFFA37500)
-val NeonCrimson = Color(0xFFFF0055)
+enum class AppThemeMode(val key: String) {
+    SYSTEM("system"),
+    DARK("dark"),
+    LIGHT("light");
 
-// Security Threat Badges
-val ThreatSafe = Color(0xFF00FF88)
-val ThreatSafeBg = Color(0xFF0A2B18)
-val ThreatWarning = Color(0xFFFFB800)
-val ThreatWarningBg = Color(0xFF332500)
-val ThreatDanger = Color(0xFFFF2255)
-val ThreatDangerBg = Color(0xFF3B0011)
-
-enum class CyberThemePalette(
-    val title: String,
-    val primary: Color,
-    val secondary: Color,
-    val tertiary: Color
-) {
-    CYBER_CYAN("Cyber Cyan", NeonCyan, MatrixGreen, LaserViolet),
-    MATRIX_GREEN("Matrix Green", MatrixGreen, NeonCyan, SolarAmber),
-    LASER_VIOLET("Laser Violet", LaserViolet, NeonCyan, NeonCrimson),
-    SOLAR_AMBER("Solar Amber", SolarAmber, NeonCrimson, NeonCyan)
+    companion object {
+        fun fromKey(key: String?): AppThemeMode =
+            entries.firstOrNull { it.key == key } ?: DARK
+    }
 }

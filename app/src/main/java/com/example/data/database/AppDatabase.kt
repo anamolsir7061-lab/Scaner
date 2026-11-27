@@ -7,7 +7,11 @@ import androidx.room.RoomDatabase
 import com.example.data.dao.ScanItemDao
 import com.example.data.model.ScanItem
 
-@Database(entities = [ScanItem::class], version = 1, exportSchema = false)
+@Database(
+    entities = [ScanItem::class],
+    version = 3,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun scanItemDao(): ScanItemDao
 
@@ -20,7 +24,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "anamol_qr_db"
+                    "anamol_qr_scanner_db"
                 ).fallbackToDestructiveMigration(dropAllTables = true).build()
                 INSTANCE = instance
                 instance

@@ -20,7 +20,8 @@ sealed class ParsedPayload {
         val queryParams: Map<String, String>,
         val isHttps: Boolean,
         val isIpAddress: Boolean,
-        val isSuspiciousTld: Boolean
+        val isSuspiciousTld: Boolean,
+        val isShortenedUrl: Boolean = false
     ) : ParsedPayload()
 
     data class WiFi(
@@ -79,9 +80,19 @@ sealed class ParsedPayload {
 data class InspectionReport(
     val raw: String,
     val format: String,
+    val formatDisplayName: String,
+    val typeCategory: String,
     val byteCount: Int,
     val charSet: String,
     val hexDump: String,
+    val rawBytes: ByteArray,
+    val utf8Decoded: String,
+    val iso8859Decoded: String,
+    val asciiDecoded: String,
+    val binaryBitStream: String,
+    val decimalByteArray: String,
+    val errorCorrectionInfo: String,
+    val checksumStatus: String,
     val mimeType: String,
     val threatLevel: ThreatLevel,
     val securityReasons: List<String>,
@@ -94,11 +105,27 @@ object HackerDataInspector {
         "xyz", "top", "work", "loan", "click", "racing", "date", "men", "party", "gq", "cf", "ml", "tk", "ga"
     )
 
+    private val SHORTENER_HOSTS = setOf(
+        "bit.ly", "tinyurl.com", "t.co", "goo.gl", "rb.gy", "is.gd", "ow.ly",
+        "cutt.ly", "shorturl.at", "tiny.cc", "rebrand.ly", "buff.ly", "bl.ink"
+    )
+
     fun inspect(raw: String, format: String = "QR_CODE"): InspectionReport {
         val trimmed = raw.trim()
         val bytes = raw.toByteArray(StandardCharsets.UTF_8)
         val hexDump = generateHexDump(bytes)
         val charSet = detectCharset(bytes)
+
+        val formatCode = BarcodeFormatHelper.parseFormatCode(format)
+        val formatInfo = BarcodeFormatHelper.getFormatInfo(formatCode)
+        val checksumStatus = BarcodeFormatHelper.verifyChecksum(trimmed, formatCode)
+
+        val utf8Text = try { String(bytes, StandardCharsets.UTF_8) } catch (_: Exception) { raw }
+        val isoText = try { String(bytes, StandardCharsets.ISO_8859_1) } catch (_: Exception) { raw }
+        val asciiText = try { String(bytes, StandardCharsets.US_ASCII) } catch (_: Exception) { raw }
+
+        val bitStream = generateBitStream(bytes)
+        val decimalBytes = generateDecimalBytes(bytes)
 
         val parsed = parsePayload(trimmed)
         val securityResult = analyzeSecurity(trimmed, parsed)
@@ -107,14 +134,48 @@ object HackerDataInspector {
         return InspectionReport(
             raw = raw,
             format = format,
+            formatDisplayName = formatInfo.formatName,
+            typeCategory = formatInfo.typeCategory,
             byteCount = bytes.size,
             charSet = charSet,
             hexDump = hexDump,
+            rawBytes = bytes,
+            utf8Decoded = utf8Text,
+            iso8859Decoded = isoText,
+            asciiDecoded = asciiText,
+            binaryBitStream = bitStream,
+            decimalByteArray = decimalBytes,
+            errorCorrectionInfo = formatInfo.errorCorrectionInfo ?: "Self-framed / standard check",
+            checksumStatus = checksumStatus,
             mimeType = mimeType,
             threatLevel = securityResult.first,
             securityReasons = securityResult.second,
             payload = parsed
         )
+    }
+
+    private fun generateBitStream(bytes: ByteArray): String {
+        if (bytes.isEmpty()) return "(empty bitstream)"
+        val limit = bytes.size.coerceAtMost(64)
+        val sb = StringBuilder()
+        for (i in 0 until limit) {
+            val b = bytes[i].toInt() and 0xFF
+            val bitStr = String.format("%8s", Integer.toBinaryString(b)).replace(' ', '0')
+            sb.append(bitStr).append(" ")
+            if ((i + 1) % 4 == 0) sb.append("\n")
+        }
+        if (bytes.size > 64) {
+            sb.append("\n... (${bytes.size - 64} more bytes truncated)")
+        }
+        return sb.toString().trimEnd()
+    }
+
+    private fun generateDecimalBytes(bytes: ByteArray): String {
+        if (bytes.isEmpty()) return "[]"
+        val limit = bytes.size.coerceAtMost(128)
+        val list = bytes.take(limit).map { it.toInt() and 0xFF }
+        val suffix = if (bytes.size > 128) ", ... (${bytes.size - 128} more bytes)" else ""
+        return "[" + list.joinToString(", ") + suffix + "]"
     }
 
     private fun generateHexDump(bytes: ByteArray): String {
@@ -275,6 +336,31 @@ object HackerDataInspector {
             )
         }
 
+        // 3b. MECARD contact parsing (MECARD:N:Name;TEL:123;EMAIL:a@b.com;;)
+        if (raw.startsWith("MECARD:", ignoreCase = true)) {
+            var name = ""
+            val phones = mutableListOf<String>()
+            val emails = mutableListOf<String>()
+            var url: String? = null
+            val tokens = raw.substring(7).split(";")
+            for (token in tokens) {
+                when {
+                    token.startsWith("N:", ignoreCase = true) -> name = token.substring(2).replace(",", " ").trim()
+                    token.startsWith("TEL:", ignoreCase = true) -> phones.add(token.substring(4).trim())
+                    token.startsWith("EMAIL:", ignoreCase = true) -> emails.add(token.substring(6).trim())
+                    token.startsWith("URL:", ignoreCase = true) -> url = token.substring(4).trim()
+                }
+            }
+            return ParsedPayload.VCard(
+                formattedName = name.ifBlank { "Contact" },
+                phoneNumbers = phones,
+                emails = emails,
+                organization = null,
+                title = null,
+                url = url
+            )
+        }
+
         // 4. Geo coordinates (geo:37.7749,-122.4194 or geo:0,0?q=...)
         if (lower.startsWith("geo:")) {
             try {
@@ -361,6 +447,8 @@ object HackerDataInspector {
 
         val tld = host.substringAfterLast(".", "")
         val isSuspiciousTld = SUSPICIOUS_TLDS.contains(tld.lowercase(Locale.ROOT))
+        val cleanHost = host.lowercase(Locale.ROOT).removePrefix("www.")
+        val isShortened = SHORTENER_HOSTS.contains(cleanHost)
 
         return ParsedPayload.Url(
             url = raw,
@@ -370,7 +458,8 @@ object HackerDataInspector {
             queryParams = params,
             isHttps = isHttps,
             isIpAddress = isIp,
-            isSuspiciousTld = isSuspiciousTld
+            isSuspiciousTld = isSuspiciousTld,
+            isShortenedUrl = isShortened
         )
     }
 
@@ -388,6 +477,9 @@ object HackerDataInspector {
                 if (payload.isSuspiciousTld) {
                     reasons.add("High-risk top level domain (.${payload.host.substringAfterLast('.')}) frequently linked to spam or phishing.")
                 }
+                if (payload.isShortenedUrl) {
+                    reasons.add("Shortened URL (${payload.host}) masks the final destination. Verify before opening.")
+                }
                 if (payload.queryParams.any { it.key.contains("token", true) || it.key.contains("auth", true) || it.key.contains("password", true) }) {
                     reasons.add("Sensitive authentication token found in URL query parameters.")
                 }
@@ -397,7 +489,7 @@ object HackerDataInspector {
 
                 return when {
                     payload.isIpAddress || (payload.isSuspiciousTld && !payload.isHttps) -> ThreatLevel.DANGER to reasons
-                    !payload.isHttps || payload.isSuspiciousTld -> ThreatLevel.WARNING to reasons
+                    !payload.isHttps || payload.isSuspiciousTld || payload.isShortenedUrl -> ThreatLevel.WARNING to reasons
                     else -> {
                         reasons.add("TLS encrypted (HTTPS). No anomalous domain indicators flagged.")
                         ThreatLevel.SAFE to reasons

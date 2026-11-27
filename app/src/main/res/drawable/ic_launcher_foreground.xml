@@ -3,6 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/anamol_qr_icon"
+        android:drawable="@drawable/anamol_scanner_icon_1795622575706"
         android:gravity="center" />
 </layer-list>

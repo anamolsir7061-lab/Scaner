@@ -20,7 +20,14 @@ interface ScanItemDao {
     @Query("SELECT * FROM scan_logs WHERE id = :id")
     fun getById(id: Long): Flow<ScanItem?>
 
-    @Query("SELECT * FROM scan_logs WHERE rawContent LIKE '%' || :query || '%' OR title LIKE '%' || :query || '%' ORDER BY timestamp DESC")
+    @Query(
+        "SELECT * FROM scan_logs " +
+            "WHERE rawContent LIKE '%' || :query || '%' " +
+            "OR title LIKE '%' || :query || '%' " +
+            "OR format LIKE '%' || :query || '%' " +
+            "OR parsedType LIKE '%' || :query || '%' " +
+            "ORDER BY timestamp DESC"
+    )
     fun search(query: String): Flow<List<ScanItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

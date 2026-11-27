@@ -1,6 +1,6 @@
 {
-  "name": "Anamol QR Code Scanner",
-  "description": "Hacker-grade QR & barcode scanner, screen circle-to-search analyzer, custom generator, and deep security inspector.",
+  "name": "Anamol Scanner",
+  "description": "High-performance offline document scanner with real-time edge detection, perspective correction, filters, Hindi & English OCR, PDF/JPG/TXT export, ID card mode, QR/barcode decoding, and AES-256 encrypted vault.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
